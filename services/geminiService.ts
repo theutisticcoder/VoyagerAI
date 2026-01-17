@@ -1,6 +1,8 @@
 
 import { GoogleGenAI, Type, Modality } from "@google/genai";
 
+// process.env.API_KEY is standard for the Gemini API in this project.
+// In Vercel, you should add API_KEY to your Project Environment Variables.
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
 
 export const generateChapter = async (
@@ -55,8 +57,6 @@ export const generateChapter = async (
 
 export const generateTTS = async (text: string) => {
   try {
-    // We only TTS the first few paragraphs to keep it responsive/efficient for mobile
-    // or provide the full text if needed. For this app, let's take a chunk.
     const ttsText = text.split('\n\n').slice(0, 3).join('\n\n');
     
     const response = await ai.models.generateContent({
