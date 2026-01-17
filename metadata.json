@@ -1,0 +1,8 @@
+{
+  "name": "MyJourneyAI",
+  "description": "A cyberpunk-themed adventure tracker that generates an AI-driven narrative based on your real-time movement speed.",
+  "requestFramePermissions": [
+    "geolocation",
+    "microphone"
+  ]
+}
