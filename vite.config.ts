@@ -8,7 +8,7 @@ export default defineConfig(({ mode }) => {
       server: {
         port: 3000,
         host: '0.0.0.0',
-        allowedHosts: "all",
+        allowedHosts: ["https://voyagerai-8x8d.onrender.com", "https://voyagerai-sigma.vercel.app"],
         assetsInclude: "**/*.html"
       },
       plugins: [react()],
