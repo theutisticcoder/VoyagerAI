@@ -14,26 +14,26 @@ export const generateChapter = async (
   const isWalking = speed < 4;
   
   const styleDirective = isSprinting 
-    ? "Use punchy, high-tension, short sentences. Focus on immediate physical danger and adrenaline. High-stakes action."
+    ? "Use punchy, high-tension, short sentences. Focus on immediate physical danger and adrenaline. High-stakes action style."
     : isWalking 
-      ? "Use atmospheric, descriptive, and flowery prose. Focus on the sensory details of the environment and deep internal monologue."
+      ? "Use atmospheric, descriptive, and flowery prose. Focus on sensory details of the neon-drenched environment and deep internal monologue."
       : "Balanced narrative with steady pacing and building intrigue.";
 
   const prompt = `
-    Continue a second-person immersive story in the ${genre} genre. 
-    Plot background: ${plot || 'A lone wanderer discovering a hidden truth in a shifting world.'}
+    Continue an immersive second-person story in the ${genre} genre. 
+    Core Plot: ${plot || 'A neon-noir mystery unfolding in a decaying megalopolis.'}
     
-    Current Chapter: ${chapterNumber}
-    Previous Events: ${previousContext.slice(-1000)}
+    Current Fragment: ${chapterNumber}
+    Previous Context (use for continuity): ${previousContext.slice(-1500)}
     
-    MANDATORY STYLISTIC INSTRUCTIONS:
-    - Strictly write in the SECOND PERSON ('You').
-    - Write EXACTLY 15 PARAGRAPHS.
-    - DO NOT mention exercise, metrics, speed, running, walking, or any real-world workout stats.
-    - ${styleDirective}
-    - The story must be immersive and self-contained within the fiction.
+    STRICT RULES:
+    1. Write exactly FIFTEEN (15) PARAGRAPHS. No more, no less.
+    2. Write exclusively in the SECOND PERSON ('You').
+    3. ${styleDirective}
+    4. NEVER mention workout metrics, miles, speed, running, walking, exercise, or real-world sensors.
+    5. Maintain 100% fictional immersion.
     
-    Ensure the transition from the previous context is seamless.
+    The transition from previous context should be seamless.
   `;
 
   try {
@@ -41,25 +41,26 @@ export const generateChapter = async (
       model: 'gemini-3-flash-preview',
       contents: prompt,
       config: {
-        temperature: 0.9,
-        topP: 0.95,
+        temperature: 0.85,
+        topP: 0.9,
       },
     });
 
-    return response.text || "The digital void remains silent...";
+    return response.text || "The digital feedback loops consume the narrative...";
   } catch (error) {
-    console.error("Story generation failed:", error);
-    return "The system glitched. Your journey continues in silence.";
+    console.error("AI Generation Error:", error);
+    return "SYSTEM ERROR: Narrative link severed. Reconnecting...";
   }
 };
 
 export const generateTTS = async (text: string) => {
   try {
-    const ttsText = text.split('\n\n').slice(0, 3).join('\n\n');
+    // Generate TTS for the first few paragraphs to keep it responsive
+    const ttsText = text.split('\n\n').slice(0, 4).join('\n\n');
     
     const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `Narrate the following with a deep, cinematic, cyberpunk-noir voice: ${ttsText}` }] }],
+      contents: [{ parts: [{ text: `Narrate this story fragment with a deep, cinematic, robotic-noir edge-tts style voice: ${ttsText}` }] }],
       config: {
         responseModalities: [Modality.AUDIO],
         speechConfig: {
@@ -72,7 +73,7 @@ export const generateTTS = async (text: string) => {
 
     return response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
   } catch (error) {
-    console.error("TTS generation failed:", error);
+    console.error("TTS Error:", error);
     return null;
   }
 };
