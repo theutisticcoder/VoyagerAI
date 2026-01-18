@@ -20,11 +20,15 @@ For local development with the API routes, you have two options:
 # Install Vercel CLI globally
 npm install -g vercel
 
-# Run local dev server
+# Run local dev server (runs Vite + API routes)
 vercel dev
 ```
 
-This will start both the frontend and API routes on `http://localhost:3000`.
+This will:
+- Start Vite's development server (with HMR)
+- Run API routes as local serverless functions
+- Both available on `http://localhost:3000`
+- Automatically detects Vite framework and uses your `vite.config.ts`
 
 #### Option B: Use Vite Dev Server (Frontend Only)
 
@@ -50,10 +54,14 @@ vercel
 
 ### 4. Build Configuration
 
-The project uses Vite for building the frontend. Vercel will automatically:
-- Build the frontend using `vite build`
-- Deploy API routes from the `/api` directory
-- Serve the frontend from the `dist` directory
+The project is configured to use Vite as the framework. Vercel will:
+- **Automatically detect Vite** via `vite.config.ts` and `package.json` scripts
+- **Build static assets** using `vite build` (runs `npm run build`)
+- **Serve static files** from the `dist` directory (not a live dev server)
+- **Deploy API routes** from the `/api` directory as serverless functions
+- **Inject Vite environment variables** (prefixed with `VITE_`) automatically
+
+**Note:** Vercel builds and serves static assets in production. For local development with API routes, use `vercel dev` which runs both Vite's dev server and the API functions.
 
 ### 5. Environment Variables
 
