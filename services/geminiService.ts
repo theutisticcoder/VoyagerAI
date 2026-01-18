@@ -66,7 +66,7 @@ export const generateChapter = async (
 
 /**
  * EDGE-TTS UNIVERSAL
- * Fetches high-quality neural speech (MP3) from an Edge-compatible endpoint.
+ * Fetches high-quality neural speech (MP3) from an Edge-compatible endpoint via Proxy.
  * Voice: en-US-GuyNeural (Standard Edge Voice)
  */
 export const generateTTS = async (text: string): Promise<string | null> => {
