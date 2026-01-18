@@ -2,12 +2,12 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { SessionState, UserMetrics, StoryChapter } from './types';
 import { GENRES, CO2_KG_PER_MILE, CHAPTER_TIME_TRIGGER, CHAPTER_DISTANCE_TRIGGER, CARPOOL_DISTANCE_MIN, CARPOOL_DISTANCE_MAX } from './constants';
-import { Dashboard } from './components/Dashboard';
-import { StoryFeed } from './components/StoryFeed';
-import { Controls } from './components/Controls';
-import { generateChapter, generateTTS } from './services/geminiService';
-import { saveSession, getSessions, deleteSession } from './services/persistenceService';
-import { supabase, isSupabaseConfigured } from './services/supabaseClient';
+import { Dashboard } from './Dashboard';
+import { StoryFeed } from './StoryFeed';
+import { Controls } from './Controls';
+import { generateChapter, generateTTS } from './geminiService';
+import { saveSession, getSessions, deleteSession } from './persistenceService';
+import { supabase, isSupabaseConfigured } from './supabaseClient';
 import { User } from '@supabase/supabase-js';
 
 const App: React.FC = () => {
