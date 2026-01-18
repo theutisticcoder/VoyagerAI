@@ -7,7 +7,7 @@ export default defineConfig(({ mode }) => {
     return {
       server: {
         port: 3000,
-        allowedHosts: 'voyagerai-8x8d.onrender.com',
+        allowedHosts: 'all',
       },
       plugins: [react()],
       define: {
