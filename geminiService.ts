@@ -1,5 +1,5 @@
 
-import { GoogleGenAI } from "@google/genai";
+import { GoogleGenAI, Modality } from "@google/genai";
 
 const MISTRAL_KEY = "nUANEOGN4al5gS7pKPtu391tBxnVkfUQ";
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY || '' });
@@ -19,23 +19,23 @@ export const generateChapter = async (
   const isWalking = speed < 4;
   
   const styleDirective = isSprinting 
-    ? "Use frantic, high-tension, fragmented sentences. The air is thick with ozone and adrenaline."
+    ? "Use frantic, high-tension, fragmented sentences. The air is thick with ozone and adrenaline. Action is immediate and visceral."
     : isWalking 
-      ? "Use evocative, slow-burn, atmospheric prose. Focus on the neon reflections and the hum of the city."
-      : "Steady, driving narrative pacing. Focus on discovery and looming threat.";
+      ? "Use evocative, slow-burn, atmospheric prose. Focus on neon reflections, the hum of the city, and deep internal monologue."
+      : "Steady, driving narrative pacing. Focus on discovery and a building sense of destiny.";
 
   const prompt = `
     Continue an immersive second-person story in the ${genre} genre. 
-    Plot: ${plot || 'A neon-noir journey through a city that never sleeps.'}
+    Global Plot: ${plot || 'A neon-noir journey through a sprawling cyber-metropolis.'}
     
-    Fragment: ${chapterNumber}
-    Context: ${previousContext.slice(-2000)}
+    Current Fragment: ${chapterNumber}
+    Historical Context: ${previousContext.slice(-2000)}
     
-    CONSTRAINTS:
-    - Write EXACTLY 15 PARAGRAPHS.
-    - Second-person perspective ('You').
-    - ${styleDirective}
-    - No mention of real-world metrics, apps, or exercise.
+    STRICT CONSTRAINTS:
+    - Write EXACTLY 15 paragraphs. This is mandatory.
+    - Perspective: SECOND PERSON ('You').
+    - Tone: ${styleDirective}
+    - ABSOLUTELY NO mention of real-world metrics, apps, exercise, or health stats.
     - Maintain 100% fictional immersion.
   `;
 
@@ -49,53 +49,47 @@ export const generateChapter = async (
       body: JSON.stringify({
         model: "mistral-large-latest",
         messages: [
-          { role: "system", content: "You are an elite cyberpunk novelist." },
+          { role: "system", content: "You are an elite cyberpunk novelist providing a real-time narrative experience." },
           { role: "user", content: prompt }
         ],
-        temperature: 0.85
+        temperature: 0.8
       })
     });
 
     const data = await response.json();
-    return data.choices[0].message.content || "Connection lost to the narrative host...";
+    if (!data.choices || !data.choices[0]) {
+      throw new Error("Invalid Mistral response");
+    }
+    return data.choices[0].message.content;
   } catch (error) {
     console.error("Mistral Error:", error);
-    return "Neural link failure. The void is all that remains.";
+    return "The narrative stream has been disrupted. You stand alone in the digital rain, waiting for the signal to return...";
   }
 };
 
 /**
- * EDGE TTS UNIVERSAL (Browser-Compatible Implementation)
- * Mimics the high-quality Edge 'Guy' or 'Sonia' neural voices.
+ * EDGE-STYLE NEURAL TTS
+ * Uses the highest quality cinematic voices to simulate Edge Universal quality.
  */
 export const generateTTS = async (text: string): Promise<string | null> => {
   try {
-    // We target the Edge TTS service via a common proxy or direct synthesis if possible.
-    // Here we use a highly reliable public TTS proxy for Edge Universal voices.
-    const ttsText = text.split('\n\n').slice(0, 3).join(' '); // Summarize first 3 paras for audio speed
-    const voice = "en-US-GuyNeural"; 
+    // We take the first few paragraphs for an immediate audio "hook"
+    const ttsText = text.split('\n\n').slice(0, 3).join('\n\n');
     
-    const response = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(
-      `https://edge-tts.vercel.app/api/tts?text=${encodeURIComponent(ttsText)}&voice=${voice}`
-    )}`);
-    
-    // Note: If using a direct Edge TTS implementation, we'd receive binary.
-    // For this environment, we'll leverage the high-quality Gemini TTS as the 
-    // "Universal" fallback which provides the closest cinematic match to Edge Neural.
-    const genaiResponse = await ai.models.generateContent({
+    const response = await ai.models.generateContent({
       model: "gemini-2.5-flash-preview-tts",
-      contents: [{ parts: [{ text: `[Edge-Style Narration - Voice: GuyNeural] ${ttsText}` }] }],
+      contents: [{ parts: [{ text: `[NARRATION MODE: EDGE-UNIVERSAL NEURAL] ${ttsText}` }] }],
       config: {
-        responseModalities: ['AUDIO'],
+        responseModalities: [Modality.AUDIO],
         speechConfig: {
           voiceConfig: {
-            prebuiltVoiceConfig: { voiceName: 'Charon' }, // Charon is the closest to Edge 'Guy'
+            prebuiltVoiceConfig: { voiceName: 'Charon' }, // Charon provides a deep, cinematic, authoritative neural quality
           },
         },
       },
     });
 
-    return genaiResponse.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || null;
+    return response.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data || null;
   } catch (error) {
     console.error("TTS Synthesis Error:", error);
     return null;
@@ -117,7 +111,6 @@ export async function decodeAudioData(
   sampleRate: number,
   numChannels: number,
 ): Promise<AudioBuffer> {
-  // Edge-style PCM or MP3 decoding logic
   const dataInt16 = new Int16Array(data.buffer);
   const frameCount = dataInt16.length / numChannels;
   const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);

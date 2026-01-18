@@ -22,20 +22,27 @@ const AudioPlayer: React.FC<{ audioBase64?: string }> = ({ audioBase64 }) => {
     }
 
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)({ sampleRate: 24000 });
+      // Standard audio context setup
+      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
     }
 
-    const data = decodeAudio(audioBase64);
-    const buffer = await decodeAudioData(data, audioContextRef.current, 24000, 1);
-    
-    const source = audioContextRef.current.createBufferSource();
-    source.buffer = buffer;
-    source.connect(audioContextRef.current.destination);
-    source.onended = () => setIsPlaying(false);
-    
-    source.start(0);
-    sourceRef.current = source;
-    setIsPlaying(true);
+    try {
+      const data = decodeAudio(audioBase64);
+      // We no longer need to pass sampleRate/channels because decodeAudioData now handles MP3 headers automatically
+      const buffer = await decodeAudioData(data, audioContextRef.current);
+      
+      const source = audioContextRef.current.createBufferSource();
+      source.buffer = buffer;
+      source.connect(audioContextRef.current.destination);
+      source.onended = () => setIsPlaying(false);
+      
+      source.start(0);
+      sourceRef.current = source;
+      setIsPlaying(true);
+    } catch (e) {
+      console.error("Audio playback error:", e);
+      setIsPlaying(false);
+    }
   };
 
   if (!audioBase64) return null;
@@ -46,9 +53,9 @@ const AudioPlayer: React.FC<{ audioBase64?: string }> = ({ audioBase64 }) => {
       className={`mt-4 flex items-center gap-2 px-4 py-2 rounded-full border border-cyan-500 text-xs tracking-widest uppercase transition-all ${isPlaying ? 'bg-cyan-500 text-black' : 'text-cyan-500 hover:bg-cyan-500/10'}`}
     >
       {isPlaying ? (
-        <><span className="w-2 h-2 bg-black rounded-full animate-ping" /> STOP NARRATION</>
+        <><span className="w-2 h-2 bg-black rounded-full animate-ping" /> STOP EDGE NEURAL</>
       ) : (
-        <><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> PLAY NARRATION</>
+        <><svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> PLAY EDGE NEURAL</>
       )}
     </button>
   );
