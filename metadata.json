@@ -1,8 +1,0 @@
-{
-  "name": "MyJourneyAI",
-  "description": "Cyberpunk adventure tracker with AI narration.",
-  "requestFramePermissions": [
-    "geolocation",
-    "microphone"
-  ]
-}
